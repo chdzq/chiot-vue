@@ -51,9 +51,10 @@ function handleNodeClick(dept: DeptVO) {
   deptId.value = dept.id;
 }
 
-onBeforeMount(() => {
-  DeptAPI.getList().then((data) => {
-    deptList.value = data;
-  });
-});
+async function fetchDeptList() {
+  // 加载部门下拉数据源
+  deptList.value = await DeptAPI.getList();
+}
+
+onBeforeMount(fetchDeptList);
 </script>

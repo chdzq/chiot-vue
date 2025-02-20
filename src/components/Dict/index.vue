@@ -10,9 +10,9 @@
   >
     <el-option
       v-for="option in options"
-      :key="option.value"
-      :label="option.label"
-      :value="option.value"
+      :key="option.key"
+      :label="option.value"
+      :value="option.key"
     />
   </el-select>
 
@@ -25,11 +25,11 @@
   >
     <el-radio
       v-for="option in options"
-      :key="option.value"
-      :label="option.label"
+      :key="option.key"
+      :label="option.value"
       :value="option.value"
     >
-      {{ option.label }}
+      {{ option.value }}
     </el-radio>
   </el-radio-group>
 
@@ -42,16 +42,17 @@
   >
     <el-checkbox
       v-for="option in options"
-      :key="option.value"
-      :label="option.label"
+      :key="option.key"
+      :label="option.value"
       :value="option.value"
     >
-      {{ option.label }}
+      {{ option.value }}
     </el-checkbox>
   </el-checkbox-group>
 </template>
 
 <script setup lang="ts">
+import { DictionaryConstantItem } from "@/api/system/dict";
 import { useDictStore } from "@/store";
 
 const dictStore = useDictStore();
@@ -90,7 +91,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-const options = ref<Array<{ label: string; value: string | number }>>([]);
+const options = ref<Array<DictionaryConstantItem>>([]);
 
 const selectedValue = ref<any>(
   typeof props.modelValue === "string" || typeof props.modelValue === "number"
@@ -108,6 +109,7 @@ watch(
       selectedValue.value = Array.isArray(newValue) ? newValue : [];
     } else {
       selectedValue.value = newValue?.toString() || "";
+      debugger;
     }
   },
   { immediate: true }

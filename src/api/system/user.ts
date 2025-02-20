@@ -38,7 +38,7 @@ const UserAPI = {
    */
   getFormData(userId: number) {
     return request<any, UserForm>({
-      url: `${USER_BASE_URL}/${userId}/form`,
+      url: `${USER_BASE_URL}/${userId}`,
       method: "get",
     });
   },
@@ -242,7 +242,7 @@ export interface UserPageQuery extends PageQuery {
   status?: number;
 
   /** 部门ID */
-  deptId?: number;
+  departmentId?: number;
 
   /** 开始时间 */
   startTime?: string;
@@ -284,11 +284,11 @@ export interface UserForm {
   /** 用户头像 */
   avatar?: string;
   /** 部门ID */
-  deptId?: number;
+  departmentId?: number;
   /** 邮箱 */
   email?: string;
   /** 性别 */
-  gender?: number;
+  gender?: string;
   /** 用户ID */
   id?: number;
   /** 手机号 */
@@ -296,7 +296,7 @@ export interface UserForm {
   /** 昵称 */
   nickname?: string;
   /** 角色ID集合 */
-  roleIds?: number[];
+  roles?: number[];
   /** 用户状态(1:正常;0:禁用) */
   status?: number;
   /** 用户名 */

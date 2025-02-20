@@ -28,11 +28,18 @@ const AuthAPI = {
   /** 刷新 token 接口*/
   refreshToken(refreshToken: string) {
     return request<any, LoginResult>({
-      url: `${AUTH_BASE_URL}/refresh-token`,
+      url: `${AUTH_BASE_URL}/oauth2/token`,
       method: "post",
-      data: { refreshToken: refreshToken },
+      data: {
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      },
       headers: {
-        Authorization: "no-auth",
+        "Content-Type": "multipart/form-data",
+      },
+      auth: {
+        username: "chiot-admin",
+        password: "123456",
       },
     });
   },

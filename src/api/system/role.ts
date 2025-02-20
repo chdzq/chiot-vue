@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const ROLE_BASE_URL = "/sys/api/v1/roles";
+const ROLE_BASE_URL = "/sys/api/v1/role";
 
 const RoleAPI = {
   /** 获取角色分页数据 */
@@ -13,10 +13,11 @@ const RoleAPI = {
   },
 
   /** 获取角色下拉数据源 */
-  getOptions() {
-    return request<any, OptionType[]>({
-      url: `${ROLE_BASE_URL}/options`,
+  getList(params?: RoleListQuery) {
+    return request<any, RolePageVO[]>({
+      url: `${ROLE_BASE_URL}/list`,
       method: "get",
+      params: params,
     });
   },
   /**
@@ -103,12 +104,18 @@ export interface RolePageQuery extends PageQuery {
   keywords?: string;
 }
 
+/** 角色查询参数 */
+export interface RoleListQuery {
+  /** 搜索关键字 */
+  keywords?: string;
+}
+
 /** 角色分页对象 */
 export interface RolePageVO {
   /** 角色编码 */
   code?: string;
   /** 角色ID */
-  id?: number;
+  id: number;
   /** 角色名称 */
   name?: string;
   /** 排序 */

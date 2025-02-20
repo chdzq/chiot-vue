@@ -4,7 +4,7 @@
     <el-row :gutter="20">
       <!-- 部门树 -->
       <el-col :lg="4" :xs="24" class="mb-[12px]">
-        <DeptTree v-model="queryParams.deptId" />
+        <DeptTree v-model="queryParams.departmentId" />
       </el-col>
 
       <!-- 用户列表 -->
@@ -127,7 +127,7 @@
                   icon="edit"
                   link
                   size="small"
-                  @click="handleOpenDialog(scope.row.id)"
+                  @click="handleOpenDialog(scope.row)"
                 >
                   编辑
                 </el-button>
@@ -177,14 +177,15 @@
         </el-form-item>
 
         <el-form-item label="所属部门" prop="deptId">
-          <el-tree-select
+          <!-- <el-tree-select
             v-model="formData.deptId"
             placeholder="请选择所属部门"
             :data="deptOptions"
             filterable
             check-strictly
             :render-after-expand="false"
-          />
+          /> -->
+          <DeptOption v-model:deptId="formData.departmentId" />
         </el-form-item>
 
         <el-form-item label="性别" prop="gender">
@@ -192,14 +193,15 @@
         </el-form-item>
 
         <el-form-item label="角色" prop="roleIds">
-          <el-select v-model="formData.roleIds" multiple placeholder="请选择">
+          <!-- <el-select v-model="formData.roles" multiple placeholder="请选择">
             <el-option
               v-for="item in roleOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
-          </el-select>
+          </el-select> -->
+          <RoleOption v-model="formData.roles" />
         </el-form-item>
 
         <el-form-item label="手机号码" prop="mobile">
@@ -243,6 +245,7 @@ import RoleAPI from "@/api/system/role";
 
 import DeptTree from "./components/DeptTree.vue";
 import UserImport from "./components/UserImport.vue";
+import DeptOption from "./components/DeptOption.vue";
 
 defineOptions({
   name: "User",
@@ -325,7 +328,7 @@ function handleQuery() {
 function handleResetQuery() {
   queryFormRef.value.resetFields();
   queryParams.pageNo = 1;
-  queryParams.deptId = undefined;
+  queryParams.departmentId = undefined;
   queryParams.startTime = undefined;
   queryParams.endTime = undefined;
   handleQuery();
@@ -362,18 +365,18 @@ function hancleResetPassword(row: UserPageVO) {
  *
  * @param id 用户ID
  */
-async function handleOpenDialog(id?: number) {
+async function handleOpenDialog(user?: UserPageVO) {
+  debugger;
   dialog.visible = true;
   // 加载角色下拉数据源
-  roleOptions.value = await RoleAPI.getOptions();
-  // 加载部门下拉数据源
-  deptOptions.value = await DeptAPI.getOptions();
+  // roleOptions.value = await RoleAPI.getOptions();
 
-  if (id) {
+  if (user?.id) {
     dialog.title = "修改用户";
-    UserAPI.getFormData(id).then((data) => {
-      Object.assign(formData, { ...data });
-    });
+    Object.assign(formData, { ...user });
+    // UserAPI.getFormData(user.id).then((data) => {
+    //   Object.assign(formData, { ...data });
+    // });
   } else {
     dialog.title = "新增用户";
   }
