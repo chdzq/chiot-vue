@@ -48,7 +48,7 @@
 
           <el-scrollbar height="400px">
             <div v-for="(item, index) in notices" :key="index" class="flex-y-center py-3">
-              <DictLabel v-model="item.type" code="notice_type" size="small" />
+              <DictLabel v-model="item.type" code="notice_type" tagSize="small" />
               <el-text
                 truncated
                 class="!mx-2 flex-1 !text-xs !text-[var(--el-text-color-secondary)]"

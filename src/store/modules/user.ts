@@ -126,7 +126,6 @@ export const useUserStore = defineStore("user", () => {
 const doPermsTransformMenus = (routes: MenuVO[]) => {
   const perms: string[] = [];
   routes.forEach((route) => {
-    debugger;
     if (route.type === MenuTypeEnum.BUTTON && route.code) {
       perms.push(route.code);
     }

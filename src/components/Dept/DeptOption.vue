@@ -1,3 +1,4 @@
+<!-- 部门列表下拉选择组件 -->
 <template>
   <el-tree-select
     v-model="deptId"

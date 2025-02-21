@@ -9,9 +9,8 @@
 <script setup lang="ts">
 import RoleAPI, { RolePageVO } from "@/api/system/role";
 
-const roles = defineModel("roles", {
-  required: false,
-  type: [String],
+const roles = defineModel<number[] | undefined>("roles", {
+  required: true,
 });
 
 const dataList = ref<RolePageVO[]>(); // 角色列表

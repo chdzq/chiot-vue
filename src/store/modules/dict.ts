@@ -20,7 +20,10 @@ export const useDictStore = defineStore("dict", () => {
     return dictionary.value[code] || [];
   };
 
-  const getDictionaryByKey = (code: string, key: string): DictionaryConstantItem | undefined => {
+  const getDictionaryByKey = (
+    code: string,
+    key: string | number
+  ): DictionaryConstantItem | undefined => {
     const dict = getDictionary(code);
     const dictEntry = dict.find((item: DictionaryConstantItem) => item.key == key);
     return dictEntry;

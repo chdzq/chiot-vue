@@ -288,7 +288,7 @@ export interface UserForm {
   /** 邮箱 */
   email?: string;
   /** 性别 */
-  gender?: string;
+  gender?: number;
   /** 用户ID */
   id?: number;
   /** 手机号 */

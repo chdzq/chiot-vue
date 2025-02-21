@@ -1,4 +1,4 @@
-<!-- 部门树 -->
+<!-- 部门树组件 -->
 <template>
   <el-card shadow="never">
     <el-input v-model="deptName" placeholder="部门名称" clearable>
@@ -32,10 +32,8 @@ const deptList = ref<DeptVO[]>(); // 部门列表
 const deptTreeRef = ref(ElTree); // 部门树
 const deptName = ref(""); // 部门名称
 
-const emits = defineEmits(["node-click"]);
-
 watch(deptName, (val) => {
-  deptTreeRef.value!.filter(val);
+  deptTreeRef.value?.filter(val);
 });
 
 /**

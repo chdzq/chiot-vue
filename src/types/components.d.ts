@@ -11,8 +11,13 @@ declare module "vue" {
     Breadcrumb: (typeof import("./../components/Breadcrumb/index.vue"))["default"];
     CopyButton: (typeof import("./../components/CopyButton/index.vue"))["default"];
     CURD: (typeof import("./../components/CURD/index.vue"))["default"];
-    Dict: (typeof import("./../components/Dict/index.vue"))["default"];
+    DictSelect: (typeof import("./../components/Dict/DictSelect.vue"))["default"];
+    DictRadio: (typeof import("./../components/Dict/DictRadio.vue"))["default"];
+    DictCheckBox: (typeof import("./../components/Dict/DictCheckBox.vue"))["default"];
     DictLabel: (typeof import("./../components/Dict/DictLabel.vue"))["default"];
+    DeptOption: (typeof import("./../components/Dept/DeptOption.vue"))["default"];
+    DeptTree: (typeof import("./../components/Dept/DeptTree.vue"))["default"];
+    RoleOption: (typeof import("./../components/Role/RoleOption.vue"))["default"];
     ElBacktop: (typeof import("element-plus/es"))["ElBacktop"];
     ElBreadcrumb: (typeof import("element-plus/es"))["ElBreadcrumb"];
     ElBreadcrumbItem: (typeof import("element-plus/es"))["ElBreadcrumbItem"];

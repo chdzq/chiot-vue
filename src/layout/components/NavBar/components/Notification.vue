@@ -116,7 +116,7 @@
               <template v-if="tasks.length > 0">
                 <div v-for="(item, index) in tasks" :key="index" class="w400px flex-x-between p-1">
                   <div>
-                    <DictLabel :dictKey="item.type" dictTable="notice_type" size="small" />
+                    <DictLabel :dictKey="item.type" dictTable="notice_type" tagSize="small" />
                     <el-link type="primary" class="ml-1" @click="readNotice(item.id)">
                       {{ item.title }}
                     </el-link>
@@ -171,7 +171,7 @@ const noticeDetailRef = ref();
 
 // 获取未读消息列表并连接 WebSocket
 onMounted(() => {
-  NoticeAPI.getMyNoticePage({ pageNum: 1, pageSize: 5, isRead: 0 }).then((data) => {
+  NoticeAPI.getMyNoticePage({ pageNo: 1, pageSize: 5, isRead: 0 }).then((data) => {
     notices.value = data.list;
   });
 

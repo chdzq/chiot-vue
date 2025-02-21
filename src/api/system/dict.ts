@@ -204,6 +204,6 @@ export interface DictionaryConstantItem {
   /** 字典数据值 */
   value: string;
 
-  /** 字典数据标签 */
-  key: string;
+  /** 字典数据key */
+  key: string | number;
 }

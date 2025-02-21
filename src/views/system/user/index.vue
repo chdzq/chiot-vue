@@ -176,32 +176,16 @@
           <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
         </el-form-item>
 
-        <el-form-item label="所属部门" prop="deptId">
-          <!-- <el-tree-select
-            v-model="formData.deptId"
-            placeholder="请选择所属部门"
-            :data="deptOptions"
-            filterable
-            check-strictly
-            :render-after-expand="false"
-          /> -->
+        <el-form-item label="所属部门" prop="departmentId">
           <DeptOption v-model:deptId="formData.departmentId" />
         </el-form-item>
 
         <el-form-item label="性别" prop="gender">
-          <Dict v-model="formData.gender" code="gender" />
+          <DictSelect v-model:selected-value="formData.gender" code="gender" />
         </el-form-item>
 
-        <el-form-item label="角色" prop="roleIds">
-          <!-- <el-select v-model="formData.roles" multiple placeholder="请选择">
-            <el-option
-              v-for="item in roleOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select> -->
-          <RoleOption v-model="formData.roles" />
+        <el-form-item label="角色" prop="roles">
+          <RoleOption v-model:roles="formData.roles" />
         </el-form-item>
 
         <el-form-item label="手机号码" prop="mobile">
@@ -240,12 +224,7 @@
 <script setup lang="ts">
 import UserAPI, { UserForm, UserPageQuery, UserPageVO } from "@/api/system/user";
 
-import DeptAPI from "@/api/system/dept";
-import RoleAPI from "@/api/system/role";
-
-import DeptTree from "./components/DeptTree.vue";
 import UserImport from "./components/UserImport.vue";
-import DeptOption from "./components/DeptOption.vue";
 
 defineOptions({
   name: "User",
@@ -277,8 +256,8 @@ const formData = reactive<UserForm>({
 const rules = reactive({
   username: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
   nickname: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
-  deptId: [{ required: true, message: "所属部门不能为空", trigger: "blur" }],
-  roleIds: [{ required: true, message: "用户角色不能为空", trigger: "blur" }],
+  departmentId: [{ required: true, message: "所属部门不能为空", trigger: "blur" }],
+  roles: [{ required: true, message: "用户角色不能为空", trigger: "blur" }],
   email: [
     {
       pattern: /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/,
@@ -297,10 +276,6 @@ const rules = reactive({
 
 // 选中的用户ID
 const selectIds = ref<number[]>([]);
-// 部门下拉数据源
-const deptOptions = ref<OptionType[]>();
-// 角色下拉数据源
-const roleOptions = ref<OptionType[]>();
 // 导入弹窗显示状态
 const importDialogVisible = ref(false);
 
@@ -366,20 +341,17 @@ function hancleResetPassword(row: UserPageVO) {
  * @param id 用户ID
  */
 async function handleOpenDialog(user?: UserPageVO) {
-  debugger;
-  dialog.visible = true;
-  // 加载角色下拉数据源
-  // roleOptions.value = await RoleAPI.getOptions();
-
   if (user?.id) {
     dialog.title = "修改用户";
     Object.assign(formData, { ...user });
-    // UserAPI.getFormData(user.id).then((data) => {
-    //   Object.assign(formData, { ...data });
-    // });
+    UserAPI.getFormData(user.id).then((data) => {
+      Object.assign(formData, { ...data });
+    });
   } else {
+    Object.assign(formData, { status: 1 });
     dialog.title = "新增用户";
   }
+  dialog.visible = true;
 }
 
 // 关闭弹窗
@@ -398,6 +370,8 @@ const handleSubmit = useThrottleFn(() => {
     if (valid) {
       const userId = formData.id;
       loading.value = true;
+      debugger;
+      console.debug(formData);
       if (userId) {
         UserAPI.update(userId, formData)
           .then(() => {
