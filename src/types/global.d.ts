@@ -1,3 +1,8 @@
+/**
+ * 主键类型
+ */
+export type ID = number | string;
+
 declare global {
   /**
    * 响应数据

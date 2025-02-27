@@ -1,6 +1,8 @@
 import request from "@/utils/request";
-import { type RolePageVO } from "./role";
+import { RoleForm, type RolePageVO } from "./role";
 import { type MenuVO } from "./menu";
+import { type ID } from "@/types/global";
+import { DeptForm } from "./dept";
 
 const USER_BASE_URL = "/sys/api/v1/user";
 
@@ -36,7 +38,7 @@ const UserAPI = {
    * @param userId 用户ID
    * @returns 用户表单详情
    */
-  getFormData(userId: number) {
+  getFormData(userId: ID) {
     return request<any, UserForm>({
       url: `${USER_BASE_URL}/${userId}`,
       method: "get",
@@ -62,7 +64,7 @@ const UserAPI = {
    * @param id 用户ID
    * @param data 用户表单数据
    */
-  update(id: number, data: UserForm) {
+  update(id: ID, data: UserForm) {
     return request({
       url: `${USER_BASE_URL}/${id}`,
       method: "put",
@@ -76,7 +78,7 @@ const UserAPI = {
    * @param id 用户ID
    * @param password 新密码
    */
-  resetPassword(id: number, password: string) {
+  resetPassword(id: ID, password: string) {
     return request({
       url: `${USER_BASE_URL}/${id}/password/reset`,
       method: "put",
@@ -89,9 +91,9 @@ const UserAPI = {
    *
    * @param ids 用户ID字符串，多个以英文逗号(,)分割
    */
-  deleteByIds(ids: string) {
+  deleteById(id: ID) {
     return request({
-      url: `${USER_BASE_URL}/${ids}`,
+      url: `${USER_BASE_URL}/${id}`,
       method: "delete",
     });
   },
@@ -125,7 +127,7 @@ const UserAPI = {
    * @param deptId 部门ID
    * @param file 导入文件
    */
-  import(deptId: number, file: File) {
+  import(deptId: ID, file: File) {
     const formData = new FormData();
     formData.append("file", file);
     return request({
@@ -213,7 +215,7 @@ export default UserAPI;
 /** 登录用户信息 */
 export interface UserInfo {
   /** 用户ID */
-  id?: number;
+  id?: ID;
 
   /** 用户名 */
   username?: string;
@@ -242,7 +244,7 @@ export interface UserPageQuery extends PageQuery {
   status?: number;
 
   /** 部门ID */
-  departmentId?: number;
+  departmentId?: ID;
 
   /** 开始时间 */
   startTime?: string;
@@ -256,13 +258,15 @@ export interface UserPageQuery extends PageQuery {
 /** 用户分页对象 */
 export interface UserPageVO {
   /** 用户ID */
-  id: number;
+  id: ID;
   /** 用户头像URL */
   avatar?: string;
   /** 创建时间 */
-  createTime?: Date;
+  createdTime?: Date;
   /** 部门名称 */
-  deptName?: string;
+  departmentId?: ID;
+  /** 部门名称 */
+  departmentName?: string;
   /** 用户邮箱 */
   email?: string;
   /** 性别 */
@@ -284,19 +288,19 @@ export interface UserForm {
   /** 用户头像 */
   avatar?: string;
   /** 部门ID */
-  departmentId?: number;
+  departmentId?: ID;
   /** 邮箱 */
   email?: string;
   /** 性别 */
   gender?: number;
   /** 用户ID */
-  id?: number;
+  id?: ID;
   /** 手机号 */
   mobile?: string;
   /** 昵称 */
   nickname?: string;
   /** 角色ID集合 */
-  roles?: number[];
+  roles?: ID[];
   /** 用户状态(1:正常;0:禁用) */
   status?: number;
   /** 用户名 */
@@ -306,7 +310,7 @@ export interface UserForm {
 /** 个人中心用户信息 */
 export interface UserProfileVO {
   /** 用户ID */
-  id?: number;
+  id?: ID;
 
   /** 用户名 */
   username?: string;
@@ -327,7 +331,7 @@ export interface UserProfileVO {
   email?: string;
 
   /** 部门名称 */
-  deptName?: string;
+  departmentName?: string;
 
   /** 角色名称，多个使用英文逗号(,)分割 */
   roleNames?: string;
@@ -339,7 +343,7 @@ export interface UserProfileVO {
 /** 个人中心用户信息表单 */
 export interface UserProfileForm {
   /** 用户ID */
-  id?: number;
+  id?: ID;
 
   /** 用户名 */
   username?: string;

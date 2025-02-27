@@ -8,8 +8,9 @@
 
 <script setup lang="ts">
 import RoleAPI, { RolePageVO } from "@/api/system/role";
+import { ID } from "@/types/global";
 
-const roles = defineModel<number[] | undefined>("roles", {
+const roles = defineModel<ID[] | undefined>("roles", {
   required: true,
 });
 

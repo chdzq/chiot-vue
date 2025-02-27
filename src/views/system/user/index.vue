@@ -60,18 +60,9 @@
                 v-hasPerm="['system_user_create']"
                 type="success"
                 icon="plus"
-                @click="handleOpenDialog()"
+                @click="handleEditDialog()"
               >
                 新增
-              </el-button>
-              <el-button
-                v-hasPerm="'sys:user:delete'"
-                type="danger"
-                icon="delete"
-                :disabled="selectIds.length === 0"
-                @click="handleDelete()"
-              >
-                删除
               </el-button>
             </div>
             <div>
@@ -89,8 +80,7 @@
             </div>
           </div>
 
-          <el-table v-loading="loading" :data="pageData" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="50" align="center" />
+          <el-table v-loading="loading" :data="pageData" :border="true">
             <el-table-column label="用户名" prop="username" />
             <el-table-column label="昵称" width="150" align="center" prop="nickname" />
             <el-table-column label="性别" width="100" align="center">
@@ -99,7 +89,7 @@
                 <DictLabel :dictKey="scope.row.gender" dictTable="gender" />
               </template>
             </el-table-column>
-            <el-table-column label="部门" width="120" align="center" prop="deptName" />
+            <el-table-column label="部门" width="120" align="center" prop="departmentName" />
             <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
             <el-table-column label="状态" align="center" prop="status" width="80">
               <template #default="scope">
@@ -108,7 +98,7 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="创建时间" align="center" prop="createTime" width="150" />
+            <el-table-column label="创建时间" align="center" prop="createdTime" width="200" />
             <el-table-column label="操作" fixed="right" width="200">
               <template #default="scope">
                 <el-button
@@ -119,7 +109,7 @@
                   link
                   @click="hancleResetPassword(scope.row)"
                 >
-                  重置密码
+                  密码
                 </el-button>
                 <el-button
                   v-hasPerm="'sys:user:edit'"
@@ -127,7 +117,7 @@
                   icon="edit"
                   link
                   size="small"
-                  @click="handleOpenDialog(scope.row)"
+                  @click="handleEditDialog(scope.row)"
                 >
                   编辑
                 </el-button>
@@ -225,6 +215,7 @@
 import UserAPI, { UserForm, UserPageQuery, UserPageVO } from "@/api/system/user";
 
 import UserImport from "./components/UserImport.vue";
+import { ID } from "@/types/global";
 
 defineOptions({
   name: "User",
@@ -274,8 +265,6 @@ const rules = reactive({
   ],
 });
 
-// 选中的用户ID
-const selectIds = ref<number[]>([]);
 // 导入弹窗显示状态
 const importDialogVisible = ref(false);
 
@@ -309,11 +298,6 @@ function handleResetQuery() {
   handleQuery();
 }
 
-// 选中项发生变化
-function handleSelectionChange(selection: any[]) {
-  selectIds.value = selection.map((item) => item.id);
-}
-
 // 重置密码
 function hancleResetPassword(row: UserPageVO) {
   ElMessageBox.prompt("请输入用户【" + row.username + "】的新密码", "重置密码", {
@@ -340,10 +324,10 @@ function hancleResetPassword(row: UserPageVO) {
  *
  * @param id 用户ID
  */
-async function handleOpenDialog(user?: UserPageVO) {
+async function handleEditDialog(user?: UserPageVO) {
   if (user?.id) {
     dialog.title = "修改用户";
-    Object.assign(formData, { ...user });
+    // Object.assign(formData, { ...user });
     UserAPI.getFormData(user.id).then((data) => {
       Object.assign(formData, { ...data });
     });
@@ -370,7 +354,6 @@ const handleSubmit = useThrottleFn(() => {
     if (valid) {
       const userId = formData.id;
       loading.value = true;
-      debugger;
       console.debug(formData);
       if (userId) {
         UserAPI.update(userId, formData)
@@ -398,13 +381,7 @@ const handleSubmit = useThrottleFn(() => {
  *
  * @param id  用户ID
  */
-function handleDelete(id?: number) {
-  const userIds = [id || selectIds.value].join(",");
-  if (!userIds) {
-    ElMessage.warning("请勾选删除项");
-    return;
-  }
-
+function handleDelete(id: number) {
   ElMessageBox.confirm("确认删除用户?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -412,7 +389,7 @@ function handleDelete(id?: number) {
   }).then(
     function () {
       loading.value = true;
-      UserAPI.deleteByIds(userIds)
+      UserAPI.deleteById(id)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();

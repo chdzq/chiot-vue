@@ -116,13 +116,13 @@ export interface DeptVO {
 /** 部门表单类型 */
 export interface DeptForm {
   /** 部门ID(新增不填) */
-  id?: string;
+  id?: ID;
   /** 部门名称 */
   name?: string;
   /** 部门编号 */
   code?: string;
   /** 父部门ID */
-  parentId: string;
+  parentId: ID;
   /** 排序 */
   sort?: number;
   /** 状态(1:启用；0：禁用) */
