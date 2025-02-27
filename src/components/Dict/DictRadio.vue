@@ -12,7 +12,7 @@ import { useDictStore } from "@/store";
 
 const dictStore = useDictStore();
 
-const selectedValue = defineModel<string | number>("selectedValue", {
+const selectedValue = defineModel<string | number | undefined>("selectedValue", {
   required: true,
 });
 const props = defineProps({

@@ -1,3 +1,4 @@
+import { type ID } from "@/types/global";
 import request from "@/utils/request";
 
 const DEPT_BASE_URL = "/sys/api/v1/department";

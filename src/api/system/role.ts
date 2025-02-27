@@ -1,3 +1,4 @@
+import { type ID } from "@/types/global";
 import request from "@/utils/request";
 
 const ROLE_BASE_URL = "/sys/api/v1/role";
@@ -131,7 +132,7 @@ export interface RolePageVO {
 /** 角色表单对象 */
 export interface RoleForm {
   /** 角色ID */
-  id?: number;
+  id?: ID;
   /** 角色编码 */
   code?: string;
   /** 数据权限 */

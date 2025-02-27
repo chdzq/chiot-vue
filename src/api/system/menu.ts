@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 // 菜单基础URL
-const MENU_BASE_URL = "/sys/api/v1/menus";
+const MENU_BASE_URL = "/sys/api/v1/resource";
 
 const MenuAPI = {
   /**
@@ -25,7 +25,7 @@ const MenuAPI = {
    */
   getList(queryParams: MenuQuery) {
     return request<any, MenuVO[]>({
-      url: `${MENU_BASE_URL}`,
+      url: `${MENU_BASE_URL}/tree`,
       method: "get",
       params: queryParams,
     });
@@ -77,7 +77,7 @@ const MenuAPI = {
    * @param data 菜单表单数据
    * @returns 请求结果
    */
-  update(id: string, data: MenuForm) {
+  update(id: ID, data: MenuForm) {
     return request({
       url: `${MENU_BASE_URL}/${id}`,
       method: "put",
@@ -102,6 +102,7 @@ const MenuAPI = {
 export default MenuAPI;
 
 import type { MenuTypeEnum } from "@/enums/MenuTypeEnum";
+import { type ID } from "@/types/global";
 
 /** 菜单查询参数 */
 export interface MenuQuery {
@@ -115,69 +116,60 @@ export interface MenuVO {
   children?: MenuVO[];
   /** 组件路径 */
   component?: string;
-  /** ICON */
-  icon?: string;
   /** 菜单ID */
-  id?: number;
+  id: ID;
   /** 菜单名称 */
   name?: string;
   /** 编码 */
   code?: string;
   /** 父菜单ID */
-  parentId?: number;
-  /** 按钮权限标识 */
-  perm?: string;
+  parentId?: ID;
   /** 跳转路径 */
   redirect?: string;
-  /** 路由名称 */
-  routeName?: string;
   /** 路由相对路径 */
   path?: string;
   /** 菜单排序(数字越小排名越靠前) */
   sort?: number;
   /** 菜单 */
   type?: MenuTypeEnum;
-  /** 菜单是否可见(1:显示;0:隐藏) */
-  visible?: number;
+  /** 【目录】只有一个子路由是否始终显示 */
+  alwaysShow?: number;
+  /** 是否隐藏(true-是 false-否) */
+  hidden: number;
+  /** ICON */
+  icon?: string;
+  /** 【菜单】是否开启页面缓存 */
+  keepAlive?: number;
+  /** 路由title */
+  title?: string;
 }
 
 /** 菜单表单对象 */
 export interface MenuForm {
   /** 菜单ID */
-  id?: string;
+  id?: ID;
   /** 父菜单ID */
-  parentId?: number;
+  parentId?: ID;
   /** 菜单名称 */
   name?: string;
   /** 菜单是否可见(1-是 0-否) */
-  visible: number;
+  hidden?: number;
   /** ICON */
   icon?: string;
   /** 排序 */
   sort?: number;
-  /** 路由名称 */
-  routeName?: string;
   /** 路由路径 */
-  routePath?: string;
+  path?: string;
   /** 组件路径 */
   component?: string;
   /** 跳转路由路径 */
   redirect?: string;
   /** 菜单 */
-  type?: MenuTypeEnum;
-  /** 权限标识 */
-  perm?: string;
+  type?: number;
   /** 【菜单】是否开启页面缓存 */
   keepAlive?: number;
   /** 【目录】只有一个子路由是否始终显示 */
   alwaysShow?: number;
-  /** 参数 */
-  params?: KeyValue[];
-}
-
-interface KeyValue {
-  key: string;
-  value: string;
 }
 
 /** RouteVO，路由对象 */

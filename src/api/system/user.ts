@@ -1,8 +1,6 @@
 import request from "@/utils/request";
-import { RoleForm, type RolePageVO } from "./role";
 import { type MenuVO } from "./menu";
 import { type ID } from "@/types/global";
-import { DeptForm } from "./dept";
 
 const USER_BASE_URL = "/sys/api/v1/user";
 

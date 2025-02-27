@@ -9,6 +9,7 @@ import { setToken, setRefreshToken, getRefreshToken, clearToken } from "@/utils/
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 import { type RolePageVO } from "@/api/system/role";
 import { type MenuVO } from "@/api/system/menu";
+import { type ID } from "@/types/global";
 
 export const useUserStore = defineStore("user", () => {
   const userInfo = useStorage<UserStorageInfo>("userInfo", {} as UserStorageInfo);
@@ -148,7 +149,7 @@ const doRoleCodesTransformRoles = (roles: RolePageVO[]) => {
 
 export interface UserStorageInfo {
   /** 用户ID */
-  id?: number;
+  id?: ID;
 
   /** 用户名 */
   username?: string;
