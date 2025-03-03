@@ -20,7 +20,7 @@
 
     <el-card shadow="never">
       <div class="mb-10px">
-        <el-button type="success" icon="plus" @click="handleOpenDialog()">新增</el-button>
+        <el-button type="success" icon="plus" @click="handleOpenDialog(undefined)">新增</el-button>
         <el-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete()">
           删除
         </el-button>
@@ -31,7 +31,7 @@
         v-loading="loading"
         :data="roleList"
         highlight-current-row
-        border
+        :border="true"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
@@ -63,7 +63,7 @@
               size="small"
               link
               icon="edit"
-              @click="handleOpenDialog(scope.row.id)"
+              @click="handleOpenDialog(scope.row)"
             >
               编辑
             </el-button>
@@ -83,7 +83,7 @@
       <pagination
         v-if="total > 0"
         v-model:total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNo"
         v-model:limit="queryParams.pageSize"
         @pagination="handleQuery"
       />
@@ -159,13 +159,6 @@
             </template>
             {{ isExpanded ? "收缩" : "展开" }}
           </el-button>
-          <el-checkbox
-            v-model="parentChildLinked"
-            class="ml-5"
-            @change="handleparentChildLinkedChange"
-          >
-            父子联动
-          </el-checkbox>
 
           <el-tooltip placement="bottom">
             <template #content>
@@ -180,18 +173,15 @@
 
       <el-tree
         ref="permTreeRef"
-        node-key="value"
+        node-key="id"
         show-checkbox
         :data="menuPermOptions"
         :filter-node-method="handlePermFilter"
         :default-expand-all="true"
-        :check-strictly="!parentChildLinked"
+        :check-strictly="false"
+        :props="{ children: 'children', label: 'name', disabled: '' }"
         class="mt-5"
-      >
-        <template #default="{ data }">
-          {{ data.label }}
-        </template>
-      </el-tree>
+      />
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="handleAssignPermSubmit">确 定</el-button>
@@ -209,7 +199,9 @@ defineOptions({
 });
 
 import RoleAPI, { RolePageVO, RoleForm, RolePageQuery } from "@/api/system/role";
-import MenuAPI from "@/api/system/menu";
+import MenuAPI, { MenuTreeVO } from "@/api/system/menu";
+import { ID } from "@/types/global";
+import { ro } from "element-plus/es/locale";
 
 const queryFormRef = ref(ElForm);
 const roleFormRef = ref(ElForm);
@@ -220,14 +212,14 @@ const ids = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<RolePageQuery>({
-  pageNum: 1,
+  pageNo: 1,
   pageSize: 10,
 });
 
 // 角色表格数据
 const roleList = ref<RolePageVO[]>();
 // 菜单权限下拉
-const menuPermOptions = ref<OptionType[]>([]);
+const menuPermOptions = ref<MenuTreeVO[]>([]);
 
 // 弹窗
 const dialog = reactive({
@@ -258,8 +250,6 @@ const assignPermDialogVisible = ref(false);
 const permKeywords = ref("");
 const isExpanded = ref(true);
 
-const parentChildLinked = ref(true);
-
 // 查询
 function handleQuery() {
   loading.value = true;
@@ -276,7 +266,7 @@ function handleQuery() {
 // 重置查询
 function handleResetQuery() {
   queryFormRef.value.resetFields();
-  queryParams.pageNum = 1;
+  queryParams.pageNo = 1;
   handleQuery();
 }
 
@@ -286,13 +276,11 @@ function handleSelectionChange(selection: any) {
 }
 
 // 打开角色弹窗
-function handleOpenDialog(roleId?: number) {
+function handleOpenDialog(role?: RoleForm) {
   dialog.visible = true;
-  if (roleId) {
+  if (role) {
     dialog.title = "修改角色";
-    RoleAPI.getFormData(roleId).then((data) => {
-      Object.assign(formData, data);
-    });
+    Object.assign(formData, role);
   } else {
     dialog.title = "新增角色";
   }
@@ -376,13 +364,12 @@ async function handleOpenAssignPermDialog(row: RolePageVO) {
     checkedRole.value.name = row.name;
 
     // 获取所有的菜单
-    menuPermOptions.value = await MenuAPI.getOptions();
+    menuPermOptions.value = await MenuAPI.getList({});
 
-    // 回显角色已拥有的菜单
-    RoleAPI.getRoleMenuIds(roleId)
+    RoleAPI.getRoleMenus(roleId)
       .then((data) => {
-        const checkedMenuIds = data;
-        checkedMenuIds.forEach((menuId) => permTreeRef.value!.setChecked(menuId, true, false));
+        const checkedMenus = data;
+        checkedMenus.forEach((menu) => permTreeRef.value!.setChecked(menu.id, true, false));
       })
       .finally(() => {
         loading.value = false;
@@ -394,9 +381,13 @@ async function handleOpenAssignPermDialog(row: RolePageVO) {
 function handleAssignPermSubmit() {
   const roleId = checkedRole.value.id;
   if (roleId) {
-    const checkedMenuIds: number[] = permTreeRef
+    debugger;
+    const checkedMenuIds: ID[] = permTreeRef
       .value!.getCheckedNodes(false, true)
-      .map((node: any) => node.value);
+      .map((node: any) => {
+        debugger;
+        return node.id;
+      });
 
     loading.value = true;
     RoleAPI.updateRoleMenus(roleId, checkedMenuIds)
@@ -438,11 +429,6 @@ function handlePermFilter(
 ) {
   if (!value) return true;
   return data.label.includes(value);
-}
-
-// 父子菜单节点是否联动
-function handleparentChildLinkedChange(val: any) {
-  parentChildLinked.value = val;
 }
 
 onMounted(() => {

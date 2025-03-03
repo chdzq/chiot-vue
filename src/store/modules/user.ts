@@ -8,7 +8,7 @@ import UserAPI, { type UserInfo } from "@/api/system/user";
 import { setToken, setRefreshToken, getRefreshToken, clearToken } from "@/utils/auth";
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 import { type RolePageVO } from "@/api/system/role";
-import { type MenuVO } from "@/api/system/menu";
+import { type MenuTreeVO } from "@/api/system/menu";
 import { type ID } from "@/types/global";
 
 export const useUserStore = defineStore("user", () => {
@@ -124,7 +124,7 @@ export const useUserStore = defineStore("user", () => {
   };
 });
 
-const doPermsTransformMenus = (routes: MenuVO[]) => {
+const doPermsTransformMenus = (routes: MenuTreeVO[]) => {
   const perms: string[] = [];
   routes.forEach((route) => {
     if (route.type === MenuTypeEnum.BUTTON && route.code) {
@@ -167,7 +167,7 @@ export interface UserStorageInfo {
   perms: string[];
 
   /*** 资源列表*/
-  resources: MenuVO[];
+  resources: MenuTreeVO[];
 }
 
 /**

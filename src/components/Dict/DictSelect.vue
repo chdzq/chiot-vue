@@ -46,7 +46,6 @@ const dataList = ref<DictionaryConstantItem[]>([]);
 
 // 监听 props 的变化，获取并更新 label 和 tag
 const fetchData = () => {
-  debugger;
   dataList.value = dictStore.getDictionary(props.code);
 };
 

@@ -58,10 +58,6 @@
         <el-table-column label="类型" align="center" width="80">
           <template #default="scope">
             <DictLabel v-model:dict-key="scope.row.type" dict-table="resource" />
-            <!-- <el-tag v-if="scope.row.type === MenuTypeEnum.CATALOG" type="warning">目录</el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.MENU" type="success">菜单</el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.BUTTON" type="danger">按钮</el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.EXTLINK" type="info">外链</el-tag> -->
           </template>
         </el-table-column>
         <el-table-column label="路由路径" align="left" width="150" prop="path" />
@@ -337,7 +333,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import MenuAPI, { MenuQuery, MenuForm, MenuVO } from "@/api/system/menu";
+import MenuAPI, { MenuQuery, MenuForm, MenuTreeVO } from "@/api/system/menu";
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 import { ID } from "@/types/global";
 
@@ -353,9 +349,9 @@ const dialog = reactive({
 // 查询参数
 const queryParams = reactive<MenuQuery>({});
 // 菜单表格数据
-const tableData = ref<MenuVO[]>([]);
+const tableData = ref<MenuTreeVO[]>([]);
 // 初始菜单表单数据
-const initialMenuFormData: MenuVO = {
+const initialMenuFormData: MenuTreeVO = {
   name: "顶级菜单",
   id: "0",
   parentId: undefined,
@@ -365,7 +361,7 @@ const initialMenuFormData: MenuVO = {
   keepAlive: 1,
 };
 // 顶级菜单下拉选项
-const menuOptions = ref<MenuVO[]>([{ ...initialMenuFormData }]);
+const menuOptions = ref<MenuTreeVO[]>([{ ...initialMenuFormData }]);
 // 菜单表单数据
 const formData = ref<MenuForm>({ parentId: initialMenuFormData.id });
 // 表单验证规则
@@ -409,7 +405,7 @@ function handleResetQuery() {
  * @param parentId 父菜单ID
  * @param menuId 菜单ID
  */
-function handleOpenDialog(parentId?: ID, menu?: MenuVO) {
+function handleOpenDialog(parentId?: ID, menu?: MenuTreeVO) {
   dialog.visible = true;
   if (menu) {
     dialog.title = "编辑菜单";

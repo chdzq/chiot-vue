@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import { type MenuVO } from "./menu";
+import { type MenuTreeVO } from "./menu";
 import { type ID } from "@/types/global";
 
 const USER_BASE_URL = "/sys/api/v1/user";
@@ -228,7 +228,7 @@ export interface UserInfo {
   roles: RolePageVO[];
 
   /** 权限 */
-  resources: MenuVO[];
+  resources: MenuTreeVO[];
 }
 
 /**

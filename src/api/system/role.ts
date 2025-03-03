@@ -1,5 +1,6 @@
 import { type ID } from "@/types/global";
 import request from "@/utils/request";
+import { type MenuForm } from "./menu";
 
 const ROLE_BASE_URL = "/sys/api/v1/role";
 
@@ -27,9 +28,9 @@ const RoleAPI = {
    * @param roleId 角色ID
    * @returns 角色的菜单ID集合
    */
-  getRoleMenuIds(roleId: number) {
-    return request<any, number[]>({
-      url: `${ROLE_BASE_URL}/${roleId}/menuIds`,
+  getRoleMenus(roleId: ID) {
+    return request<any, MenuForm[]>({
+      url: `${ROLE_BASE_URL}/${roleId}/resources`,
       method: "get",
     });
   },
@@ -40,11 +41,11 @@ const RoleAPI = {
    * @param roleId 角色ID
    * @param data 菜单ID集合
    */
-  updateRoleMenus(roleId: number, data: number[]) {
+  updateRoleMenus(roleId: ID, resources: ID[]) {
     return request({
-      url: `${ROLE_BASE_URL}/${roleId}/menus`,
+      url: `${ROLE_BASE_URL}/${roleId}/resources`,
       method: "put",
-      data: data,
+      data: resources,
     });
   },
 
@@ -76,7 +77,7 @@ const RoleAPI = {
    * @param id 角色ID
    * @param data 角色表单数据
    */
-  update(id: number, data: RoleForm) {
+  update(id: ID, data: RoleForm) {
     return request({
       url: `${ROLE_BASE_URL}/${id}`,
       method: "put",

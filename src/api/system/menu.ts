@@ -24,7 +24,7 @@ const MenuAPI = {
    * @returns 菜单树形列表
    */
   getList(queryParams: MenuQuery) {
-    return request<any, MenuVO[]>({
+    return request<any, MenuTreeVO[]>({
       url: `${MENU_BASE_URL}/tree`,
       method: "get",
       params: queryParams,
@@ -110,9 +110,9 @@ export interface MenuQuery {
 }
 
 /** 菜单视图对象 */
-export interface MenuVO {
+export interface MenuTreeVO {
   /** 子菜单 */
-  children?: MenuVO[];
+  children?: MenuTreeVO[];
   /** 组件路径 */
   component?: string;
   /** 菜单ID */
@@ -148,7 +148,7 @@ export interface MenuVO {
 /** 菜单表单对象 */
 export interface MenuForm {
   /** 菜单ID */
-  id?: ID;
+  id: ID;
   /** 父菜单ID */
   parentId?: ID;
   /** 路由名称 */

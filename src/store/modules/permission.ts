@@ -3,7 +3,7 @@ import { constantRoutes } from "@/router";
 import { store, useUserStore } from "@/store";
 import router from "@/router";
 
-import { type MenuVO } from "@/api/system/menu";
+import { type MenuTreeVO } from "@/api/system/menu";
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("@/layout/index.vue");
@@ -71,13 +71,12 @@ export const usePermissionStore = defineStore("permission", () => {
 /**
  * 转换路由数据为组件
  */
-const transformRoutes = (routes: MenuVO[]) => {
+const transformRoutes = (routes: MenuTreeVO[]) => {
   const asyncRoutes: RouteRecordRaw[] = [];
   routes.forEach((router) => {
     if (router.type === MenuTypeEnum.BUTTON) {
       return;
     } else {
-      debugger;
       const tmp = {} as RouteRecordRaw;
       // 顶级目录，替换为 Layout 组件
       if (router.type == MenuTypeEnum.CATALOG) {
@@ -90,7 +89,6 @@ const transformRoutes = (routes: MenuVO[]) => {
           tmp.component = modules["../../views/error-page/404.vue"];
         }
       } else {
-        debugger;
         // 其他菜单，根据组件路径动态加载组件
         const component = modules[`../../views/${router.component}.vue`];
         if (component) {
