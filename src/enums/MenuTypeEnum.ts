@@ -5,11 +5,11 @@ export const enum MenuTypeEnum {
   /**
    * 目录
    */
-  CATALOG = 1,
+  CATALOG = 2,
   /**
    * 菜单
    */
-  MENU = 2,
+  MENU = 1,
 
   /**
    * 按钮

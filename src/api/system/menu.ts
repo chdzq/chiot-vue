@@ -101,7 +101,6 @@ const MenuAPI = {
 
 export default MenuAPI;
 
-import type { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 import { type ID } from "@/types/global";
 
 /** 菜单查询参数 */
@@ -120,18 +119,18 @@ export interface MenuVO {
   id: ID;
   /** 菜单名称 */
   name?: string;
-  /** 编码 */
+  /** 路由名称 */
   code?: string;
   /** 父菜单ID */
   parentId?: ID;
   /** 跳转路径 */
-  redirect?: string;
+  link?: string;
   /** 路由相对路径 */
   path?: string;
   /** 菜单排序(数字越小排名越靠前) */
   sort?: number;
   /** 菜单 */
-  type?: MenuTypeEnum;
+  type?: number;
   /** 【目录】只有一个子路由是否始终显示 */
   alwaysShow?: number;
   /** 是否隐藏(true-是 false-否) */
@@ -142,6 +141,8 @@ export interface MenuVO {
   keepAlive?: number;
   /** 路由title */
   title?: string;
+  /** 权限标识 */
+  permission?: string;
 }
 
 /** 菜单表单对象 */
@@ -150,6 +151,8 @@ export interface MenuForm {
   id?: ID;
   /** 父菜单ID */
   parentId?: ID;
+  /** 路由名称 */
+  code?: string;
   /** 菜单名称 */
   name?: string;
   /** 菜单是否可见(1-是 0-否) */
@@ -163,13 +166,15 @@ export interface MenuForm {
   /** 组件路径 */
   component?: string;
   /** 跳转路由路径 */
-  redirect?: string;
+  link?: string;
   /** 菜单 */
   type?: number;
   /** 【菜单】是否开启页面缓存 */
   keepAlive?: number;
   /** 【目录】只有一个子路由是否始终显示 */
   alwaysShow?: number;
+  /** 权限标识 */
+  permission?: string;
 }
 
 /** RouteVO，路由对象 */

@@ -7,6 +7,7 @@ import { type MenuVO } from "@/api/system/menu";
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("@/layout/index.vue");
+const Redirect = () => import("@/views/redirect/index.vue");
 
 export const usePermissionStore = defineStore("permission", () => {
   // 所有路由，包括静态和动态路由
@@ -72,39 +73,50 @@ export const usePermissionStore = defineStore("permission", () => {
  */
 const transformRoutes = (routes: MenuVO[]) => {
   const asyncRoutes: RouteRecordRaw[] = [];
-  routes.forEach((route) => {
-    if (route.type === MenuTypeEnum.BUTTON) {
+  routes.forEach((router) => {
+    if (router.type === MenuTypeEnum.BUTTON) {
       return;
-    } else if (route.component) {
-      const tmpRoute = { ...route } as RouteRecordRaw;
+    } else {
+      debugger;
+      const tmp = {} as RouteRecordRaw;
       // 顶级目录，替换为 Layout 组件
-      if (route.component.toString() == "Layout") {
-        tmpRoute.component = Layout;
-      } else {
-        // 其他菜单，根据组件路径动态加载组件
-        const component = modules[`../../views${route.path}/index.vue`];
-        if (component) {
-          tmpRoute.component = component;
+      if (router.type == MenuTypeEnum.CATALOG) {
+        tmp.component = Layout;
+      } else if (router.type == MenuTypeEnum.EXTLINK) {
+        tmp.component = Redirect;
+        if (router.link) {
+          tmp.path = `/redirect?path=${encodeURIComponent(router.link)}`;
         } else {
-          tmpRoute.component = modules["../../views/error-page/404.vue"];
+          tmp.component = modules["../../views/error-page/404.vue"];
+        }
+      } else {
+        debugger;
+        // 其他菜单，根据组件路径动态加载组件
+        const component = modules[`../../views/${router.component}.vue`];
+        if (component) {
+          tmp.component = component;
+        } else {
+          tmp.component = modules["../../views/error-page/404.vue"];
         }
       }
 
+      if (!tmp.path && router.path) {
+        tmp.path = router.path;
+      }
       const meta = {} as RouteMeta;
       meta.alwaysShow = false;
       meta.hidden = false;
-      meta.title = route.name;
+      meta.title = router.name;
       meta.keepAlive = true;
-      meta.icon = route.icon;
-      tmpRoute.meta = meta;
+      meta.icon = router.icon;
+      tmp.meta = meta;
 
-      if (route.children) {
-        tmpRoute.children = transformRoutes(route.children);
+      if (router.children) {
+        tmp.children = transformRoutes(router.children);
       }
-      asyncRoutes.push(tmpRoute);
+      asyncRoutes.push(tmp);
     }
   });
-
   return asyncRoutes;
 };
 

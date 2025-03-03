@@ -57,15 +57,16 @@
 
         <el-table-column label="类型" align="center" width="80">
           <template #default="scope">
-            <el-tag v-if="scope.row.type === MenuTypeEnum.CATALOG" type="warning">目录</el-tag>
+            <DictLabel v-model:dict-key="scope.row.type" dict-table="resource" />
+            <!-- <el-tag v-if="scope.row.type === MenuTypeEnum.CATALOG" type="warning">目录</el-tag>
             <el-tag v-if="scope.row.type === MenuTypeEnum.MENU" type="success">菜单</el-tag>
             <el-tag v-if="scope.row.type === MenuTypeEnum.BUTTON" type="danger">按钮</el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.EXTLINK" type="info">外链</el-tag>
+            <el-tag v-if="scope.row.type === MenuTypeEnum.EXTLINK" type="info">外链</el-tag> -->
           </template>
         </el-table-column>
         <el-table-column label="路由路径" align="left" width="150" prop="path" />
         <el-table-column label="组件路径" align="left" width="250" prop="component" />
-        <el-table-column label="权限标识" align="center" width="200" prop="code" />
+        <el-table-column label="权限标识" align="center" width="200" prop="permission" />
         <el-table-column label="状态" align="center" width="80">
           <template #default="scope">
             <el-tag v-if="scope.row.hidden === 0" type="success">显示</el-tag>
@@ -135,23 +136,25 @@
           <DictRadio v-model:selected-value="formData.type" code="resource" />
         </el-form-item>
 
-        <el-form-item v-if="formData.type == MenuTypeEnum.EXTLINK" label="外链地址" prop="path">
-          <el-input v-model="formData.redirect" placeholder="请输入外链完整路径" />
+        <el-form-item v-if="formData.type == MenuTypeEnum.EXTLINK" label="外链地址" prop="redirect">
+          <el-input v-model="formData.link" placeholder="请输入外链完整路径" />
         </el-form-item>
 
-        <el-form-item prop="component">
+        <el-form-item prop="code">
           <template #label>
             <div class="flex-y-center">
-              组件名称
+              路由名称
               <el-tooltip placement="bottom" effect="light">
-                <template #content>定义不同的模块的名称， 大驼峰，比如User。</template>
+                <template #content>
+                  如果需要开启缓存，需保证页面 defineOptions 中的 name 与此处一致，建议使用驼峰。
+                </template>
                 <el-icon class="ml-1 cursor-pointer">
                   <QuestionFilled />
                 </el-icon>
               </el-tooltip>
             </div>
           </template>
-          <el-input v-model="formData.component" placeholder="User" />
+          <el-input v-model="formData.code" placeholder="User" />
         </el-form-item>
 
         <el-form-item
@@ -195,7 +198,7 @@
             </div>
           </template>
 
-          <el-input v-model="formData.path" placeholder="system/user/index" style="width: 95%">
+          <el-input v-model="formData.component" placeholder="system/user/index" style="width: 95%">
             <template v-if="formData.type == MenuTypeEnum.MENU" #prepend>src/views/</template>
             <template v-if="formData.type == MenuTypeEnum.MENU" #append>.vue</template>
           </el-input>
@@ -300,9 +303,13 @@
         </el-form-item>
 
         <!-- 权限标识 -->
-        <!-- <el-form-item v-if="formData.type == MenuTypeEnum.BUTTON" label="权限标识" prop="perm">
-          <el-input v-model="formData.perm" placeholder="sys:user:add" />
-        </el-form-item> -->
+        <el-form-item
+          v-if="formData.type == MenuTypeEnum.BUTTON"
+          label="权限标识"
+          prop="permission"
+        >
+          <el-input v-model="formData.permission" placeholder="sys:user:add" />
+        </el-form-item>
 
         <el-form-item v-if="formData.type !== MenuTypeEnum.BUTTON" label="图标" prop="icon">
           <!-- 图标选择器 -->
@@ -310,7 +317,7 @@
         </el-form-item>
 
         <el-form-item v-if="formData.type == MenuTypeEnum.CATALOG" label="跳转路由">
-          <el-input v-model="formData.redirect" placeholder="跳转路由" />
+          <el-input v-model="formData.link" placeholder="跳转路由" />
         </el-form-item>
       </el-form>
 
@@ -326,7 +333,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: "SysMenu",
+  name: "Menu",
   inheritAttrs: false,
 });
 
