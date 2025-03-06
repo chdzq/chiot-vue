@@ -84,7 +84,7 @@
               link
               size="small"
               icon="edit"
-              @click.stop="handleOpenDialog(scope.row.parentId, scope.row.id)"
+              @click.stop="handleOpenDialog(scope.row.parentId, scope.row)"
             >
               编辑
             </el-button>
@@ -115,6 +115,7 @@
             v-model="formData.parentId"
             placeholder="选择上级部门"
             :data="deptOptions"
+            :props="{ value: 'id', children: 'children', label: 'name', disabled: '' }"
             filterable
             check-strictly
             :render-after-expand="false"
@@ -135,10 +136,7 @@
           />
         </el-form-item>
         <el-form-item label="部门状态">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="1">正常</el-radio>
-            <el-radio :value="0">禁用</el-radio>
-          </el-radio-group>
+          <DictRadio v-model:selected-value="formData.status" code="status" />
         </el-form-item>
       </el-form>
 
@@ -159,6 +157,7 @@ defineOptions({
 });
 
 import DeptAPI, { DeptVO, DeptForm, DeptQuery } from "@/api/system/dept";
+import { ID } from "@/types/global";
 
 const queryFormRef = ref(ElForm);
 const deptFormRef = ref(ElForm);
@@ -173,7 +172,7 @@ const dialog = reactive({
 });
 
 const deptList = ref<DeptVO[]>();
-const deptOptions = ref<OptionType[]>();
+const deptOptions = ref<DeptVO[]>();
 const formData = reactive<DeptForm>({
   status: 1,
   parentId: "0",
@@ -213,23 +212,23 @@ function handleSelectionChange(selection: any) {
  * @param parentId 父部门ID
  * @param deptId 部门ID
  */
-async function handleOpenDialog(parentId?: string, deptId?: number) {
+async function handleOpenDialog(parentId?: ID, dept?: DeptVO) {
   // 加载部门下拉数据
-  const data = await DeptAPI.getOptions();
+  const data = await DeptAPI.getList();
   deptOptions.value = [
     {
-      value: "0",
-      label: "顶级部门",
+      id: "0",
+      name: "顶级部门",
       children: data,
     },
   ];
 
   dialog.visible = true;
-  if (deptId) {
+  if (dept) {
     dialog.title = "修改部门";
-    DeptAPI.getFormData(deptId).then((data) => {
-      Object.assign(formData, data);
-    });
+    // DeptAPI.getFormData(deptId).then((data) => {
+    Object.assign(formData, dept);
+    // });
   } else {
     dialog.title = "新增部门";
     formData.parentId = parentId || "0";

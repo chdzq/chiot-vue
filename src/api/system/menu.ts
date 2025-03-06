@@ -148,7 +148,7 @@ export interface MenuTreeVO {
 /** 菜单表单对象 */
 export interface MenuForm {
   /** 菜单ID */
-  id: ID;
+  id?: ID;
   /** 父菜单ID */
   parentId?: ID;
   /** 路由名称 */
