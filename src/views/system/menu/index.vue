@@ -129,7 +129,7 @@
         </el-form-item>
 
         <el-form-item label="菜单类型" prop="type">
-          <DictRadio v-model:selected-value="formData.type" code="resource" />
+          <DictRadio v-model:selected-value="formData.type" dictTable="resource" />
         </el-form-item>
 
         <el-form-item v-if="formData.type == MenuTypeEnum.EXTLINK" label="外链地址" prop="redirect">
@@ -461,11 +461,6 @@ function handleSubmit() {
 
 // 删除菜单
 function handleDelete(menuId: number) {
-  if (!menuId) {
-    ElMessage.warning("请勾选删除项");
-    return false;
-  }
-
   ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",

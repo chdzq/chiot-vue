@@ -86,13 +86,13 @@ const RoleAPI = {
   },
 
   /**
-   * 批量删除角色，多个以英文逗号(,)分割
+   * 批量删除角色
    *
-   * @param ids 角色ID字符串，多个以英文逗号(,)分割
+   * @param ids 角色ID字符串
    */
-  deleteByIds(ids: string) {
+  deleteById(id: ID) {
     return request({
-      url: `${ROLE_BASE_URL}/${ids}`,
+      url: `${ROLE_BASE_URL}/${id}`,
       method: "delete",
     });
   },

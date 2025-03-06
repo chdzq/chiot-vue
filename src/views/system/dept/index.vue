@@ -35,15 +35,6 @@
         >
           新增
         </el-button>
-        <el-button
-          v-hasPerm="['sys:dept:delete']"
-          type="danger"
-          :disabled="selectIds.length === 0"
-          icon="delete"
-          @click="handleDelete()"
-        >
-          删除
-        </el-button>
       </div>
 
       <el-table
@@ -52,15 +43,16 @@
         row-key="id"
         default-expand-all
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column prop="name" label="部门名称" min-width="200" />
         <el-table-column prop="code" label="部门编号" width="200" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
-            <el-tag v-else type="info">禁用</el-tag>
+            <DictLabel
+              v-bind:dict-key="scope.row.status"
+              dict-table="status"
+              :tag-type="scope.row.status == 1 ? TagTypeEnum.SUCCESS : TagTypeEnum.INFO"
+            />
           </template>
         </el-table-column>
 
@@ -136,7 +128,7 @@
           />
         </el-form-item>
         <el-form-item label="部门状态">
-          <DictRadio v-model:selected-value="formData.status" code="status" />
+          <DictRadio v-model:selected-value="formData.status" dictTable="status" />
         </el-form-item>
       </el-form>
 
@@ -157,13 +149,13 @@ defineOptions({
 });
 
 import DeptAPI, { DeptVO, DeptForm, DeptQuery } from "@/api/system/dept";
+import { TagTypeEnum } from "@/enums/TagEnum";
 import { ID } from "@/types/global";
 
 const queryFormRef = ref(ElForm);
 const deptFormRef = ref(ElForm);
 
 const loading = ref(false);
-const selectIds = ref<number[]>([]);
 const queryParams = reactive<DeptQuery>({});
 
 const dialog = reactive({
@@ -201,11 +193,6 @@ function handleResetQuery() {
   handleQuery();
 }
 
-// 处理选中项变化
-function handleSelectionChange(selection: any) {
-  selectIds.value = selection.map((item: any) => item.id);
-}
-
 /**
  * 打开部门弹窗
  *
@@ -226,9 +213,13 @@ async function handleOpenDialog(parentId?: ID, dept?: DeptVO) {
   dialog.visible = true;
   if (dept) {
     dialog.title = "修改部门";
-    // DeptAPI.getFormData(deptId).then((data) => {
-    Object.assign(formData, dept);
-    // });
+    DeptAPI.getFormData(dept.id!)
+      .then((data) => {
+        Object.assign(formData, data);
+      })
+      .catch((error) => {
+        Object.assign(formData, dept);
+      });
   } else {
     dialog.title = "新增部门";
     formData.parentId = parentId || "0";
@@ -263,14 +254,7 @@ function handleSubmit() {
 }
 
 // 删除部门
-function handleDelete(deptId?: number) {
-  const deptIds = [deptId || selectIds.value].join(",");
-
-  if (!deptIds) {
-    ElMessage.warning("请勾选删除项");
-    return;
-  }
-
+function handleDelete(deptId: ID) {
   ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -278,7 +262,7 @@ function handleDelete(deptId?: number) {
   }).then(
     () => {
       loading.value = true;
-      DeptAPI.deleteByIds(deptIds)
+      DeptAPI.deleteById(deptId)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();

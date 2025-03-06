@@ -3,35 +3,23 @@
 </template>
 
 <script setup lang="ts">
+import { TagSizeEnum, TagTypeEnum } from "@/enums/TagEnum";
 import { useDictStore } from "@/store";
+import { ID } from "@/types/global";
 
 const dictStore = useDictStore();
 
-const props = defineProps({
-  dictTable: {
-    type: String,
-    required: true,
-  },
-  dictKey: {
-    type: [String, Number],
-    required: true,
-  },
-  tagSize: {
-    type: String,
-    default: "default",
-    validator: (value: string) => ["default", "large", "small"].includes(value),
-  },
-  tagType: {
-    type: String,
-    default: "success",
-    validator: (value: string) =>
-      ["success", "warning", "info", "primary", "danger"].includes(value),
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    dictKey: ID;
+    dictTable: string;
+    tagSize?: TagSizeEnum;
+    tagType?: TagTypeEnum;
+  }>(),
+  { tagSize: TagSizeEnum.DEFAULT, tagType: TagTypeEnum.SUCCESS }
+);
 
 const label = ref("");
-const tagType = ref(props.tagType as "success" | "warning" | "info" | "primary" | "danger");
-const tagSize = ref(props.tagSize as "default" | "large" | "small");
 
 // 监听 props 的变化，获取并更新 label 和 tag
 const fetchData = () => {

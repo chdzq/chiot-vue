@@ -32,9 +32,9 @@ const DeptAPI = {
    * @param id 部门ID
    * @returns 部门表单数据
    */
-  getFormData(id: number) {
+  getFormData(id: ID) {
     return request<any, DeptForm>({
-      url: `${DEPT_BASE_URL}/${id}/form`,
+      url: `${DEPT_BASE_URL}/${id}`,
       method: "get",
     });
   },
@@ -71,12 +71,12 @@ const DeptAPI = {
   /**
    * 删除部门
    *
-   * @param ids 部门ID，多个以英文逗号(,)分隔
+   * @param id 部门ID
    * @returns 请求结果
    */
-  deleteByIds(ids: string) {
+  deleteById(id: ID) {
     return request({
-      url: `${DEPT_BASE_URL}/${ids}`,
+      url: `${DEPT_BASE_URL}/${id}`,
       method: "delete",
     });
   },

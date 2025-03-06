@@ -1,7 +1,7 @@
 <!-- 角色选择列表 -->
 
 <template>
-  <el-select v-model="roles" multiple placeholder="请选择">
+  <el-select v-model="roles" :multiple="multiple" :placeholder="placeholder">
     <el-option v-for="item in dataList" :key="item.id" :label="item.name" :value="item.id" />
   </el-select>
 </template>
@@ -13,6 +13,14 @@ import { ID } from "@/types/global";
 const roles = defineModel<ID[] | undefined>("roles", {
   required: true,
 });
+
+const props = withDefaults(
+  defineProps<{
+    multiple?: boolean;
+    placeholder?: string;
+  }>(),
+  { multiple: true, placeholder: "请选择" }
+);
 
 const dataList = ref<RolePageVO[]>(); // 角色列表
 

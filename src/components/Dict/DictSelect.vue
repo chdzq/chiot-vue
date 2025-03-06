@@ -4,7 +4,7 @@
     :placeholder="placeholder"
     :disabled="disabled"
     clearable
-    :style="style"
+    :style="{ width: `${width}px` }"
   >
     <el-option v-for="data in dataList" :key="data.key" :label="data.value" :value="data.key" />
   </el-select>
@@ -19,34 +19,25 @@ const dictStore = useDictStore();
 const selectedValue = defineModel<string | number | [] | undefined>("selectedValue", {
   required: true,
 });
-const props = defineProps({
-  code: {
-    type: String,
-    required: true,
-  },
-  placeholder: {
-    type: String,
-    default: "请选择",
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  style: {
-    type: Object,
-    default: () => {
-      return {
-        width: "300px",
-      };
-    },
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    dictTable: string;
+    placeholder?: string;
+    disabled?: boolean;
+    width?: number;
+  }>(),
+  {
+    placeholder: "请选择",
+    disabled: false,
+    width: 300,
+  }
+);
 
 const dataList = ref<DictionaryConstantItem[]>([]);
 
 // 监听 props 的变化，获取并更新 label 和 tag
 const fetchData = () => {
-  dataList.value = dictStore.getDictionary(props.code);
+  dataList.value = dictStore.getDictionary(props.dictTable);
 };
 
 // 获取字典数据

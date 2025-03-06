@@ -2,7 +2,7 @@
 <template>
   <el-tree-select
     v-model="deptId"
-    placeholder="请选择所属部门"
+    :placeholder="placeholder"
     node-key="id"
     value-key="id"
     :data="deptList"
@@ -17,6 +17,13 @@
 import DeptAPI, { DeptVO } from "@/api/system/dept";
 
 const deptId = defineModel("deptId");
+
+const props = withDefaults(
+  defineProps<{
+    placeholder?: string;
+  }>(),
+  { placeholder: "请选择所属部门" }
+);
 
 const deptList = ref<DeptVO[]>(); // 部门列表
 

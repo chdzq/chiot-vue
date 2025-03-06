@@ -21,9 +21,6 @@
     <el-card shadow="never">
       <div class="mb-10px">
         <el-button type="success" icon="plus" @click="handleOpenDialog(undefined)">新增</el-button>
-        <el-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete()">
-          删除
-        </el-button>
       </div>
 
       <el-table
@@ -32,9 +29,7 @@
         :data="roleList"
         highlight-current-row
         :border="true"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="角色名称" prop="name" min-width="100" />
         <el-table-column label="角色编码" prop="code" width="150" />
 
@@ -208,7 +203,6 @@ const roleFormRef = ref(ElForm);
 const permTreeRef = ref<InstanceType<typeof ElTree>>();
 
 const loading = ref(false);
-const ids = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<RolePageQuery>({
@@ -270,11 +264,6 @@ function handleResetQuery() {
   handleQuery();
 }
 
-// 行复选框选中
-function handleSelectionChange(selection: any) {
-  ids.value = selection.map((item: any) => item.id);
-}
-
 // 打开角色弹窗
 function handleOpenDialog(role?: RoleForm) {
   dialog.visible = true;
@@ -326,13 +315,7 @@ function handleCloseDialog() {
 }
 
 // 删除角色
-function handleDelete(roleId?: number) {
-  const roleIds = [roleId || ids.value].join(",");
-  if (!roleIds) {
-    ElMessage.warning("请勾选删除项");
-    return;
-  }
-
+function handleDelete(roleId: ID) {
   ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -340,7 +323,7 @@ function handleDelete(roleId?: number) {
   }).then(
     () => {
       loading.value = true;
-      RoleAPI.deleteByIds(roleIds)
+      RoleAPI.deleteById(roleId)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();
