@@ -1,6 +1,7 @@
 import request from "@/utils/request";
 import { type MenuTreeVO } from "./menu";
 import { type ID } from "@/types/global";
+import { type RolePageVO } from "./role";
 
 const USER_BASE_URL = "/sys/api/v1/user";
 
@@ -335,7 +336,7 @@ export interface UserProfileVO {
   roleNames?: string;
 
   /** 创建时间 */
-  createTime?: Date;
+  createdTime?: Date;
 }
 
 /** 个人中心用户信息表单 */

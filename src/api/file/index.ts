@@ -1,10 +1,12 @@
 import request from "@/utils/request";
 
+const CONFIG_BASE_URL = "/sys/api/v1/file";
+
 const FileAPI = {
   /**
    * 文件上传地址
    */
-  uploadUrl: import.meta.env.VITE_APP_BASE_API + "/api/v1/files",
+  uploadUrl: import.meta.env.VITE_APP_BASE_API + CONFIG_BASE_URL,
 
   /**
    * 上传文件
@@ -15,7 +17,7 @@ const FileAPI = {
     const formData = new FormData();
     formData.append("file", file);
     return request<any, FileInfo>({
-      url: "/api/v1/files",
+      url: CONFIG_BASE_URL,
       method: "post",
       data: formData,
       headers: {
@@ -31,7 +33,7 @@ const FileAPI = {
    */
   deleteByPath(filePath?: string) {
     return request({
-      url: "/api/v1/files",
+      url: CONFIG_BASE_URL,
       method: "delete",
       params: { filePath: filePath },
     });

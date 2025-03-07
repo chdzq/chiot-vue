@@ -62,7 +62,7 @@
                   <SvgIcon icon-class="tree" />
                   部门
                 </template>
-                {{ userProfile.deptName }}
+                {{ userProfile.departmentName }}
               </el-descriptions-item>
               <el-descriptions-item>
                 <template #label>
@@ -77,7 +77,7 @@
                   <el-icon class="align-middle"><Timer /></el-icon>
                   创建日期
                 </template>
-                {{ userProfile.createTime }}
+                {{ userProfile.createdTime }}
               </el-descriptions-item>
             </el-descriptions>
           </el-card>
