@@ -1,3 +1,4 @@
+import { type ID } from "@/types/global";
 import request from "@/utils/request";
 
 const DICT_BASE_URL = "/sys/api/v1/dictionary";
@@ -49,7 +50,7 @@ const DictAPI = {
    * @param id 字典ID
    * @param data 字典表单数据
    */
-  update(id: number, data: DictForm) {
+  update(id: ID, data: DictForm) {
     return request({
       url: `${DICT_BASE_URL}/${id}`,
       method: "put",
@@ -62,9 +63,9 @@ const DictAPI = {
    *
    * @param ids 字典ID，多个以英文逗号(,)分隔
    */
-  deleteByIds(ids: string) {
+  deleteByIds(id: ID) {
     return request({
-      url: `${DICT_BASE_URL}/${ids}`,
+      url: `${DICT_BASE_URL}/${id}`,
       method: "delete",
     });
   },
@@ -106,7 +107,7 @@ export interface DictPageVO {
   /**
    * 字典ID
    */
-  id: number;
+  id: ID;
   /**
    * 字典名称
    */
@@ -114,11 +115,15 @@ export interface DictPageVO {
   /**
    * 字典编码
    */
-  dictCode: string;
+  code: string;
   /**
    * 字典状态（1:启用，0:禁用）
    */
   status: number;
+  /**
+   * 备注
+   */
+  remark?: string;
 }
 
 /**
@@ -128,7 +133,7 @@ export interface DictForm {
   /**
    * 字典ID
    */
-  id?: number;
+  id?: ID;
   /**
    * 字典名称
    */
@@ -136,7 +141,7 @@ export interface DictForm {
   /**
    * 字典编码
    */
-  dictCode?: string;
+  code?: string;
   /**
    * 字典状态（1-启用，0-禁用）
    */

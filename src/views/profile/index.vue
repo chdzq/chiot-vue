@@ -273,6 +273,8 @@ import UserAPI, {
 import FileAPI from "@/api/file";
 
 import { Camera } from "@element-plus/icons-vue";
+import { da } from "element-plus/es/locale";
+import { useUserStore } from "@/store";
 
 const userProfile = ref<UserProfileVO>({});
 
@@ -458,6 +460,7 @@ const handleFileChange = async (event: Event) => {
       const data = await FileAPI.upload(file);
       // 更新用户头像
       userProfile.value.avatar = data.url;
+      useUserStore().userInfo.avatar = data.url;
       // 更新用户信息
       await UserAPI.updateProfile({
         avatar: data.url,

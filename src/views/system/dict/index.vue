@@ -21,29 +21,21 @@
     <el-card shadow="never">
       <div class="mb-[10px]">
         <el-button type="success" icon="plus" @click="handleAddClick()">新增</el-button>
-        <el-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete()">
-          删除
-        </el-button>
       </div>
 
-      <el-table
-        v-loading="loading"
-        highlight-current-row
-        :data="tableData"
-        border
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" align="center" />
+      <el-table v-loading="loading" highlight-current-row :data="tableData" :border="true">
         <el-table-column label="字典名称" prop="name" />
-        <el-table-column label="字典编码" prop="dictCode" />
+        <el-table-column label="字典编码" prop="code" />
         <el-table-column label="状态" prop="status">
           <template #default="scope">
+            <DictLabel :dict-key="scope.row.status" dict-table="status" />
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
               {{ scope.row.status === 1 ? "启用" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="220">
+        <el-table-column label="备注" prop="remark" />
+        <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button type="primary" link size="small" @click.stop="handleOpenDictData(scope.row)">
               <template #icon>
@@ -57,7 +49,7 @@
               link
               size="small"
               icon="edit"
-              @click.stop="handleEditClick(scope.row.id, scope.row.name)"
+              @click.stop="handleEditClick(scope.row)"
             >
               编辑
             </el-button>
@@ -66,7 +58,7 @@
               link
               size="small"
               icon="delete"
-              @click.stop="handleDelete(scope.row.id)"
+              @click.stop="handleDelete(scope.row.id!)"
             >
               删除
             </el-button>
@@ -96,15 +88,16 @@
             <el-input v-model="formData.name" placeholder="请输入字典名称" />
           </el-form-item>
 
-          <el-form-item label="字典编码" prop="dictCode">
-            <el-input v-model="formData.dictCode" placeholder="请输入字典编码" />
+          <el-form-item label="字典编码" prop="code">
+            <el-input v-model="formData.code" placeholder="请输入字典编码" />
           </el-form-item>
 
           <el-form-item label="状态">
-            <el-radio-group v-model="formData.status">
+            <DictRadio v-model:selected-value="formData.status" dict-table="status" />
+            <!-- <el-radio-group v-model="formData.status">
               <el-radio :value="1">启用</el-radio>
               <el-radio :value="0">禁用</el-radio>
-            </el-radio-group>
+            </el-radio-group> -->
           </el-form-item>
 
           <el-form-item label="备注">
@@ -130,14 +123,15 @@ defineOptions({
 });
 
 import DictAPI, { DictPageQuery, DictPageVO, DictForm } from "@/api/system/dict";
+import DictLabel from "@/components/Dict/DictLabel.vue";
 
 import router from "@/router";
+import { ID } from "@/types/global";
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
 
 const loading = ref(false);
-const ids = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<DictPageQuery>({
@@ -157,7 +151,7 @@ const formData = reactive<DictForm>({});
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     name: [{ required: true, message: "请输入字典名称", trigger: "blur" }],
-    dictCode: [{ required: true, message: "请输入字典编码", trigger: "blur" }],
+    code: [{ required: true, message: "请输入字典编码", trigger: "blur" }],
   };
   return rules;
 });
@@ -182,11 +176,6 @@ function handleResetQuery() {
   handleQuery();
 }
 
-// 行选择
-function handleSelectionChange(selection: any) {
-  ids.value = selection.map((item: any) => item.id);
-}
-
 // 新增字典
 function handleAddClick() {
   dialog.visible = true;
@@ -198,12 +187,13 @@ function handleAddClick() {
  *
  * @param id 字典ID
  */
-function handleEditClick(id: number, name: string) {
+function handleEditClick(data: DictPageVO) {
   dialog.visible = true;
   dialog.title = "修改字典";
-  DictAPI.getFormData(id).then((data) => {
-    Object.assign(formData, data);
-  });
+  Object.assign(formData, data);
+  // DictAPI.getFormData(id).then((data) => {
+  //   Object.assign(formData, data);
+  // });
 }
 
 // 提交字典表单
@@ -247,19 +237,14 @@ function handleCloseDialog() {
  *
  * @param id 字典ID
  */
-function handleDelete(id?: number) {
-  const attrGroupIds = [id || ids.value].join(",");
-  if (!attrGroupIds) {
-    ElMessage.warning("请勾选删除项");
-    return;
-  }
+function handleDelete(id: ID) {
   ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
   }).then(
     () => {
-      DictAPI.deleteByIds(attrGroupIds).then(() => {
+      DictAPI.deleteByIds(id).then(() => {
         ElMessage.success("删除成功");
         handleResetQuery();
       });
@@ -273,8 +258,8 @@ function handleDelete(id?: number) {
 // 打开字典数据
 function handleOpenDictData(row: DictPageVO) {
   router.push({
-    path: "/system/dict-data",
-    query: { dictCode: row.dictCode, title: "【" + row.name + "】字典数据" },
+    name: "dictionaryData",
+    query: { id: row.id, title: "【" + row.name + "】字典数据" },
   });
 
   /*  router.push({

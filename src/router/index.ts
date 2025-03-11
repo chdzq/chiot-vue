@@ -58,6 +58,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/profile/index.vue"),
         meta: { title: "个人中心", icon: "user", hidden: true },
       },
+
+      {
+        path: "dict-data",
+        name: "dictionaryData",
+        component: () => import("@/views/system/dict/data.vue"),
+        meta: { title: "字典项", icon: "dict", hidden: true },
+      },
     ],
   },
 ];

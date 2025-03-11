@@ -5,8 +5,8 @@
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="关键字" prop="keywords">
           <el-input
-            v-model="queryParams.keywords"
-            placeholder="字典标签/字典值"
+            v-model="queryParams.keyword"
+            placeholder="字典键/字典值"
             clearable
             @keyup.enter="handleQuery"
           />
@@ -26,26 +26,20 @@
         </el-button>
       </div>
 
-      <el-table
-        v-loading="loading"
-        highlight-current-row
-        :data="tableData"
-        border
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="字典标签" prop="label" />
+      <el-table v-loading="loading" highlight-current-row :data="tableData" border:true>
+        <el-table-column label="字典键" prop="key" />
         <el-table-column label="字典值" prop="value" />
         <el-table-column label="排序" prop="sort" />
         <el-table-column label="状态">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
+            <DictLabel v-model:dict-key="scope.row.status" dict-table="status" />
+            <!-- <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
               {{ scope.row.status === 1 ? "启用" : "禁用" }}
-            </el-tag>
+            </el-tag> -->
           </template>
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" align="center" width="220">
+        <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button
               type="primary"
@@ -72,7 +66,7 @@
       <pagination
         v-if="total > 0"
         v-model:total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNo"
         v-model:limit="queryParams.pageSize"
         @pagination="handleQuery"
       />
@@ -87,33 +81,21 @@
     >
       <el-form ref="dataFormRef" :model="formData" :rules="computedRules" label-width="100px">
         <el-card shadow="never">
-          <el-form-item label="字典标签" prop="label">
-            <el-input v-model="formData.label" placeholder="请输入字典标签" />
+          <el-form-item label="字典键" prop="key">
+            <el-input v-model="formData.key" placeholder="请输入字典KEY" />
           </el-form-item>
           <el-form-item label="字典值" prop="value">
-            <el-input v-model="formData.value" placeholder="请输入字典值" />
+            <el-input v-model="formData.value" placeholder="请输入字典Value" />
           </el-form-item>
           <el-form-item label="状态">
-            <el-radio-group v-model="formData.status">
+            <!-- <el-radio-group v-model="formData.status">
               <el-radio :value="1">启用</el-radio>
               <el-radio :value="0">禁用</el-radio>
-            </el-radio-group>
+            </el-radio-group> -->
+            <DictRadio v-model:selected-value="formData.status" dict-table="status" />
           </el-form-item>
           <el-form-item label="排序">
             <el-input-number v-model="formData.sort" controls-position="right" />
-          </el-form-item>
-          <el-form-item label="标签类型">
-            <el-tag v-if="formData.tagType" :type="formData.tagType" class="mr-2">
-              {{ formData.label }}
-            </el-tag>
-            <el-radio-group v-model="formData.tagType">
-              <el-radio value="success" border size="small">success</el-radio>
-              <el-radio value="warning" border size="small">warning</el-radio>
-              <el-radio value="info" border size="small">info</el-radio>
-              <el-radio value="primary" border size="small">primary</el-radio>
-              <el-radio value="danger" border size="small">danger</el-radio>
-              <el-radio value="" border size="small">清空</el-radio>
-            </el-radio-group>
           </el-form-item>
         </el-card>
       </el-form>
@@ -139,10 +121,12 @@ import DictDataAPI, {
   DictDataPageVO,
   DictDataForm,
 } from "@/api/system/dict-data";
+import DictLabel from "@/components/Dict/DictLabel.vue";
+import { ID } from "@/types/global";
 
 const route = useRoute();
 
-const dictCode = ref(route.query.dictCode as string);
+const dictId = ref(route.query.id as ID);
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -152,9 +136,9 @@ const ids = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<DictDataPageQuery>({
-  pageNum: 1,
+  pageNo: 1,
   pageSize: 10,
-  dictCode: dictCode.value,
+  dictionaryId: dictId.value,
 });
 
 const tableData = ref<DictDataPageVO[]>();
@@ -166,15 +150,15 @@ const dialog = reactive({
 
 const formData = reactive<DictDataForm>({});
 
-// 监听路由参数变化，更新字典数据
-watch(
-  () => [route.query.dictCode],
-  ([newDictCode]) => {
-    queryParams.dictCode = newDictCode as string;
-    dictCode.value = newDictCode as string;
-    handleQuery();
-  }
-);
+// // 监听路由参数变化，更新字典数据
+// watch(
+//   () => [route.query.dictCode],
+//   ([newDictCode]) => {
+//     queryParams.dictCode = newDictCode as string;
+//     dictId.value = newDictCode as string;
+//     handleQuery();
+//   }
+// );
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     value: [{ required: true, message: "请输入字典值", trigger: "blur" }],
@@ -199,13 +183,8 @@ function handleQuery() {
 // 重置查询
 function handleResetQuery() {
   queryFormRef.value.resetFields();
-  queryParams.pageNum = 1;
+  queryParams.pageNo = 1;
   handleQuery();
-}
-
-// 行选择
-function handleSelectionChange(selection: any) {
-  ids.value = selection.map((item: any) => item.id);
 }
 
 // 打开弹窗
@@ -214,9 +193,11 @@ function handleOpenDialog(row?: DictDataPageVO) {
   dialog.title = row ? "编辑字典数据" : "新增字典数据";
 
   if (row?.id) {
-    DictDataAPI.getFormData(row.id).then((data) => {
-      Object.assign(formData, data);
-    });
+    Object.assign(formData, row);
+    // DictDataAPI.getFormData(row.id).then((data) => {
+    // });
+  } else {
+    Object.assign(formData, {});
   }
 }
 
@@ -225,10 +206,8 @@ function handleSubmitClick() {
   dataFormRef.value.validate((isValid: boolean) => {
     if (isValid) {
       loading.value = true;
-      const id = formData.id;
-      formData.dictCode = dictCode.value;
-      if (id) {
-        DictDataAPI.update(id, formData)
+      if (formData.id) {
+        DictDataAPI.update(dictId.value, formData)
           .then(() => {
             ElMessage.success("修改成功");
             handleCloseDialog();
@@ -236,7 +215,7 @@ function handleSubmitClick() {
           })
           .finally(() => (loading.value = false));
       } else {
-        DictDataAPI.add(formData)
+        DictDataAPI.add(dictId.value, formData)
           .then(() => {
             ElMessage.success("新增成功");
             handleCloseDialog();
@@ -264,19 +243,14 @@ function handleCloseDialog() {
  *
  * @param id 字典ID
  */
-function handleDelete(id?: number) {
-  const attrGroupIds = [id || ids.value].join(",");
-  if (!attrGroupIds) {
-    ElMessage.warning("请勾选删除项");
-    return;
-  }
+function handleDelete(id: ID) {
   ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
   }).then(
     () => {
-      DictDataAPI.deleteByIds(attrGroupIds).then(() => {
+      DictDataAPI.deleteById(dictId.value, id).then(() => {
         ElMessage.success("删除成功");
         handleResetQuery();
       });

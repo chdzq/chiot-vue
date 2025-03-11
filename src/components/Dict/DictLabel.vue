@@ -32,4 +32,12 @@ const fetchData = () => {
 
 // 首次挂载时获取字典数据
 onMounted(fetchData);
+
+//变更数据及时刷新
+watch(
+  () => props.dictKey,
+  (dictKey) => {
+    fetchData();
+  }
+);
 </script>
